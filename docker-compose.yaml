@@ -1,0 +1,15 @@
+version: '3.8'
+services:
+  desafio-movimentacao-financeira-db:
+    image: mysql:8.0.41-debian
+    container_name: desafio-movimentacao-financeira-db
+    restart: always
+    volumes:
+      - desafio-movimentacao-financeira-db-data:/var/lib/mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: movimentacaoFinanceiraDB@123
+      MYSQL_DATABASE: movimentacao_financeira
+    ports:
+      - "3306:3306"
+volumes:
+  desafio-movimentacao-financeira-db-data:

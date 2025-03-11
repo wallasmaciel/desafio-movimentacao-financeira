@@ -1,5 +1,13 @@
 version: '3.8'
 services:
+  desafio-movimentacao-financeira-back:
+    build:
+      context: .
+      dockerfile: ./back/Dockerfile
+    volumes:
+      - ./back:/workspace/desafio-movimentacao-financeira-back
+    command: sleep infinity
+    network_mode: service:desafio-movimentacao-financeira-db
   desafio-movimentacao-financeira-db:
     image: mysql:8.0.41-debian
     container_name: desafio-movimentacao-financeira-db

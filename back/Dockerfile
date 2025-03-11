@@ -1,18 +1,11 @@
-FROM php:8.2-fpm
+FROM php:8.2-cli
 
-RUN apt-get update && apt-get install -y \
-    zip unzip curl git \
-    libpng-dev libjpeg-dev libfreetype6-dev \
-    && docker-php-ext-install pdo pdo_mysql gd
+RUN apt-get update && export DEBIAN_FRONTEND=noninteractive \
+    && apt-get install -y git \
+    && apt-get clean -y && rm -rf /var/lib/apt/lists/*
+# Install php-mysql driver
+RUN docker-php-ext-install mysqli pdo pdo_mysql
 
-COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
-WORKDIR /var/www/html
-
-COPY . .
-RUN composer install
-
-RUN chown -R www-data:www-data storage bootstrap/cache
-RUN chmod -R 775 storage bootstrap/cache
-
-CMD ["php-fpm"]
+# Install Composer
+RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 

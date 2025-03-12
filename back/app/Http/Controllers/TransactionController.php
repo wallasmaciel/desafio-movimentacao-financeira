@@ -10,6 +10,8 @@ class TransactionController extends Controller
     public function index() 
     {
         $transactions = TransactionModel::all();
+        $transactions->load("category");
+        // 
         return response()->json($transactions);
     }
 

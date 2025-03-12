@@ -20,6 +20,8 @@
         title: 'Login'
     })
 
+    const { $axios } = useNuxtApp()
+
     interface LoginForm {
         username: string
         password: string
@@ -33,7 +35,7 @@
         // homologacao
         initialValues: {
             username: 'wallas',
-            password: 'wallas1234@',
+            password: '123456',
         },
     })
 
@@ -41,14 +43,23 @@
     const { value: username } = useField<string>('username')
     const { value: password } = useField<string>('password')
 
-    const handleLogin = handleSubmit(values => {
+    const handleLogin = handleSubmit(async values => {
         loading.value = true
-        setTimeout(() => {
-            try {
-                navigateTo('/movements')
-            } finally {
-                loading.value = false
-            }
-        }, 2000)
+        // 
+        try {
+            const response = await $axios.post('/users/login', {
+                username: values.username, 
+                password: values.password,
+            })
+            if (response.status != 200) throw new Error("Problema ao realizar login." + response.data)
+            // 
+            localStorage.setItem("auth_token", response.data.token)
+            navigateTo('/movements')
+        } catch(err: any) {
+            alert(err.message ?? err)
+            console.error(err)
+        } finally {
+            loading.value = false
+        }
     })
 </script>

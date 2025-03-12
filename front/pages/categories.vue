@@ -21,10 +21,10 @@
             loading-text="Carregando..."
         > 
             <template v-slot:item.actions="{ item }">
-                <v-btn icon>
+                <v-btn icon @click="handleEditTransaction(item)">
                     <v-icon>mdi-pencil</v-icon>
                 </v-btn>
-                <v-btn icon>
+                <v-btn icon @click="handleDeleteCategory(item.id)">
                     <v-icon>mdi-delete</v-icon>
                 </v-btn>
             </template>    
@@ -54,6 +54,7 @@
 </template>
 
 <script setup lang="ts">
+    import { onMounted } from 'vue'
     import * as yup from 'yup'
 
     useHead({
@@ -62,6 +63,16 @@
     definePageMeta({
         layout: 'authenticated',
     })
+
+    const { $axios } = useNuxtApp()
+
+    interface Category {
+        id: string,
+        name: string,
+        description: string,
+        type: string,
+        created_at: string,
+    }
 
     interface CategoryForm {
         name: string
@@ -74,9 +85,9 @@
         name: yup.string().required('O nome é obrigatório'),
         description: yup.string().required('A descrição é obrigatório'),
         type: yup.string().required('O tipo é obrigatório'),
-        status: yup.number().required('O status é obrigatório'),
+        status: yup.number().default(1),
     })
-    const { handleSubmit, errors } = useForm<CategoryForm>({
+    const { handleSubmit, errors, resetForm } = useForm<CategoryForm>({
         validationSchema,
     })
 
@@ -98,7 +109,7 @@
         { title: 'Status', value: 'status' },
         { text: 'Ações', value: 'actions', sortable: false },
     ])
-    const data = reactive([])
+    const data = ref<Readonly<Category>[]>([])
     const itemsStatus = ref([
         { value: 1, text: 'ATIVO' },
         { value: 0, text: 'INATIVO' },
@@ -110,9 +121,57 @@
 
     const handleOpenDialog = () => {
         category_id.value = null
+        resetForm()
+        // 
         dialogAdd.value = true
     }
     const handleCreateCategory = handleSubmit(values => {
-        alert(category_id.value)
+        const dataRequest = {
+            name: values.name,
+            description: values.description,
+            type: values.type,
+        }
+        let request = category_id.value
+            ? $axios.put(`/categories/${category_id.value}`, dataRequest)
+            : $axios.post('/categories', dataRequest)
+        request.then(response => {
+            dialogAdd.value = false
+            fetchCategories()
+        }).catch(err => {
+            alert(err.message ?? err)
+        })
     })
+
+    const fetchCategories = async() => {
+        tableLoading.value = true
+        try {
+            const response = await $axios.get("/categories")
+            if (response.status != 200) throw new Error('Falha na consulta de categorias: ', response.data)
+            data.value = response.data
+        } catch(err: any) {
+            alert(err.message ?? err)
+        } finally {
+            tableLoading.value = false
+        }
+    }
+
+    const handleDeleteCategory = (id: string) => {
+        $axios.delete(`/categories/${id}`).then(response => {
+            fetchCategories()
+        }).catch(err => {
+            alert(err.message ?? err + ' - ' + id)
+        })
+    }
+
+    const handleEditTransaction = (item: Category) => {
+        category_id.value = item.id
+        category_name.value = item.name
+        category_description.value = item.description
+        category_type.value = item.type
+        category_status.value = 1 // HOMOLOGACAO
+        // 
+        dialogAdd.value = true
+    }
+
+    onMounted(fetchCategories)
 </script>

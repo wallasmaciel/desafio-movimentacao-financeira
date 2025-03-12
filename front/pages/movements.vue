@@ -21,10 +21,10 @@
             loading-text="Carregando..."
         >    
             <template v-slot:item.actions="{ item }">
-                <v-btn icon>
+                <v-btn icon @click="handleEditTransaction(item)">
                     <v-icon>mdi-pencil</v-icon>
                 </v-btn>
-                <v-btn icon>
+                <v-btn icon @click="handleDeleteTransaction(item.id)">
                     <v-icon>mdi-delete</v-icon>
                 </v-btn>
             </template>    
@@ -40,7 +40,8 @@
                         <v-text-field v-model="movement_ammount" type="text" label="Valor" :error-messages="errors.ammount"></v-text-field>
                     </v-col>
                     <v-col>
-                        <v-select v-model="movement_category" label="Categoria" :items="listCategories" :error-messages="errors.category"></v-select>
+                        <v-select v-model="movement_category" label="Categoria" 
+                            :items="listCategories" item-title="name" item-value="id" :error-messages="errors.category"></v-select>
                     </v-col>
                 </v-row>
                 <v-btn :loading="formLoading" text="Entrar" type="submit" color="primary"
@@ -51,6 +52,7 @@
 </template>
 
 <script setup lang="ts">
+    import { onMounted } from 'vue'
     import * as yup from 'yup'
     import Dialog from '~/components/Dialog.vue'
 
@@ -61,20 +63,29 @@
         layout: 'authenticated',
     })
 
+    const { $axios } = useNuxtApp()
+
+    interface Transaction {
+        id: string
+        user_id: string
+        category_id: string
+        description: string
+        ammount: number
+        created_at: string
+    }
+
     interface MovimentForm {
         description: string
-        type: string
         ammount: number
         category: string
     }
 
     const validationSchema: yup.ObjectSchema<MovimentForm> = yup.object({
         description: yup.string().required('A descrição é obrigatório'),
-        type: yup.string().required('O tipo é obrigatório'),
         ammount: yup.number().required('O valor é obrigatório'),
         category: yup.string().required('A categoria é obrigatória'),
     })
-    const { handleSubmit, errors } = useForm<MovimentForm>({
+    const { handleSubmit, errors, resetForm } = useForm<MovimentForm>({
         validationSchema,
     })
 
@@ -82,7 +93,6 @@
     const { value: movement_description } = useField<string>('description')
     const { value: movement_category } = useField<string>('category')
     const { value: movement_ammount } = useField<string>('ammount')
-    const { value: movement_type } = useField<string>('type')
 
     const dialogAdd = ref(false)
     const formLoading = ref(false)
@@ -91,19 +101,83 @@
     const headers = reactive([
         { title: 'Data de criação', value: 'created_at' },
         { title: 'Descrição', value: 'description' },
-        { title: 'Tipo', value: 'type' },
+        { title: 'Tipo', value: 'category.type' },
         { title: 'Valor', value: 'ammount' },
-        { title: 'Categoria', value: 'category' },
+        { title: 'Categoria', value: 'category.name' },
         { text: 'Ações', value: 'actions', sortable: false },
     ])
-    const data = reactive([])
-    const listCategories = reactive<string[]>([])
+    const data = ref<Readonly<Transaction>[]>([])
+    const listCategories = ref<Readonly<{
+        id: string,
+        name: string
+    }>[]>([])
 
     const handleOpenDialog = () => {
         movement_id.value = null
+        resetForm()
+        // 
         dialogAdd.value = true
     }
     const handleCreateMoviment = handleSubmit(values => {
+        const dataRequest = {
+            category_id: values.category,
+            description: values.description,
+            ammount: values.ammount,
+        }
+        let request = movement_id.value
+            ? $axios.put(`/transactions/${movement_id.value}`, dataRequest)
+            : $axios.post('/transactions', dataRequest)
+        // 
+        request.then(response => {
+            dialogAdd.value = false
+            fetchTransactions()
+        }).catch(err => {
+            alert(err.message ?? err)
+        })
+    })
 
+    const fetchTransactions = async() => {
+        tableLoading.value = true
+        try {
+            const response = await $axios.get("/transactions")
+            if (response.status != 200) throw new Error('Falha na consulta de transacoes: ', response.data)
+            data.value = response.data
+        } catch(err: any) {
+            alert(err.message ?? err)
+        } finally {
+            tableLoading.value = false
+        }
+    }
+
+    const fetchCategories = async() => {
+        try {
+            const response = await $axios.get("/categories")
+            if (response.status != 200) throw new Error('Falha na consulta de categorias: ', response.data)
+            listCategories.value = response.data
+        } catch(err: any) {
+            alert(err.message ?? err)
+        }
+    }
+
+    const handleEditTransaction = (item: Transaction) => {
+        movement_id.value = item.id
+        movement_description.value = item.description
+        movement_category.value = item.category_id
+        movement_ammount.value = item.ammount.toString()
+        // 
+        dialogAdd.value = true
+    }
+
+    const handleDeleteTransaction = (id: string) => {
+        $axios.delete(`/transactions/${id}`).then(response => {
+            fetchTransactions()
+        }).catch(err => {
+            alert(err.message ?? err + ' - ' + id)
+        })
+    }
+
+    onMounted(() => {
+        fetchTransactions()
+        fetchCategories()
     })
 </script>

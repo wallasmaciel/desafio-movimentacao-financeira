@@ -1,12 +1,24 @@
-import axios from "axios"
+import axios, { type AxiosInstance } from "axios"
 
 export default defineNuxtPlugin(nuxtApp => {
   const api = axios.create({
-    baseURL: "https://viacep.com.br/ws",
+    baseURL: "http://localhost:8000/api",
   })
-  return {
-    provide: {
-      api,
-    }
-  }
+  api.interceptors.request.use(config => {
+      const token = localStorage.getItem("auth_token")
+      if (token) 
+        config.headers["Authorization"] = `Bearer ${token}`
+      // 
+      return config;
+    },
+    Promise.reject
+  )
+
+  nuxtApp.provide('axios', api)
 })
+
+declare module "#app" {
+  interface NuxtApp {
+    $axios: AxiosInstance
+  }
+}

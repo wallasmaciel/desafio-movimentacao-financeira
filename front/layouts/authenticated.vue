@@ -12,6 +12,10 @@
             <v-btn @click="handleToCategories">
                 <span>Categorias</span>
             </v-btn>
+
+            <v-btn @click="handleLogout">
+                <v-icon size="24" color="red">mdi-logout</v-icon>
+            </v-btn>
         </v-toolbar>
         <main class="overflow-auto" style="max-height: calc(100vh - 80);">
             <slot></slot>
@@ -22,4 +26,8 @@
 <script setup>
     const handleToMoviments = () => navigateTo('/movements')
     const handleToCategories = () => navigateTo('/categories')
+    const handleLogout = () => {
+        localStorage.removeItem('auth_token')
+        navigateTo('/')
+    }
 </script>

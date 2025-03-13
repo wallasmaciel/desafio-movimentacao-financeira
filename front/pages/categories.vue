@@ -138,7 +138,7 @@
             dialogAdd.value = false
             fetchCategories()
         }).catch(err => {
-            alert(err.message ?? err)
+            alert(err.response.data.message ?? err.message ?? err)
         })
     })
 
@@ -149,7 +149,7 @@
             if (response.status != 200) throw new Error('Falha na consulta de categorias: ', response.data)
             data.value = response.data
         } catch(err: any) {
-            alert(err.message ?? err)
+            alert(err.response.data.message ?? err.message ?? err)
         } finally {
             tableLoading.value = false
         }
@@ -159,7 +159,7 @@
         $axios.delete(`/categories/${id}`).then(response => {
             fetchCategories()
         }).catch(err => {
-            alert(err.message ?? err + ' - ' + id)
+            alert(err.response.data.message ?? err.message ?? err)
         })
     }
 

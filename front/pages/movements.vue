@@ -1,7 +1,6 @@
 <template>
     <div class="d-flex flex-column ps-2 pt-2 pe-2 pb-2">
         <div class="d-flex justify-end">
-            <input type="text" v-model="search" placeholder="Procurando" />
             <v-btn
                 class="text-none"
                 color="primary"
@@ -141,7 +140,10 @@
         try {
             const response = await $axios.get("/transactions")
             if (response.status != 200) throw new Error('Falha na consulta de transacoes: ', response.data)
-            data.value = response.data
+            data.value = response.data.map(value => ({
+                ...value,
+                created_at: formattedDate(value.created_at),
+            }))
         } catch(err: any) {
             alert(err.response.data.message ?? err.message ?? err)
         } finally {

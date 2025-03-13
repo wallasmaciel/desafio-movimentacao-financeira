@@ -6,10 +6,11 @@ use App\Models\UserModel;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Firebase\JWT\JWT;
+use Exception;
 
 class UserController extends Controller
 {
-    public static $KEY_JWT = "T3prvi5ZQNZiW7IZTaYSTMpAJVfUMyqdPiFq18YJSuEY71f5J529IIDnBb7guzTJ";
+    public static $KEY_JWT = env("JWT_SECRET", "token_jwt");
     public function login(Request $request)
     {
         $validatedData = $request->validate([
@@ -18,11 +19,9 @@ class UserController extends Controller
         ]);
         //
         $user = UserModel::where("username", $validatedData["username"])->first();
-        if (!$user || !Hash::check($validatedData["password"], $user->password)) {
-            return response()->json([
-                "message" => "Credenciais inválidas."
-            ]);
-        }
+        if (!$user || !Hash::check($validatedData["password"], $user->password)) 
+            throw new Exception("Usuário ou senha não identificados.");
+	    //
         $payload = [
             'iss' => 'movimentacao-financeira-back',
             'sub' => [

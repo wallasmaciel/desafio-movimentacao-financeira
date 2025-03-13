@@ -122,7 +122,7 @@ import { formattedDate } from '~/utils/dateUtil'
             dialogAdd.value = false
             fetchCategories()
         }).catch(err => {
-            alert(err.response.data.message ?? err.message ?? err)
+            alert(err.response?.data?.message ?? err.message ?? err)
         })
     })
 
@@ -136,7 +136,7 @@ import { formattedDate } from '~/utils/dateUtil'
                 created_at: formattedDate(value.created_at),
             }))
         } catch(err: any) {
-            alert(err.response.data.message ?? err.message ?? err)
+            alert(err.response?.data?.message ?? err.message ?? err)
         } finally {
             tableLoading.value = false
         }
@@ -146,7 +146,7 @@ import { formattedDate } from '~/utils/dateUtil'
         $axios.delete(`/categories/${id}`).then(response => {
             fetchCategories()
         }).catch(err => {
-            alert(err.response.data.message ?? err.message ?? err)
+            alert(err.response?.data?.message ?? err.message ?? err)
         })
     }
 

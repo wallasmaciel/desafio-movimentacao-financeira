@@ -56,7 +56,7 @@
             localStorage.setItem("auth_token", response.data.token)
             navigateTo('/movements')
         } catch(err: any) {
-            alert(err.response.data.message ?? err.message ?? err)
+            alert(err.response?.data?.message ?? err.message ?? err)
         } finally {
             loading.value = false
         }

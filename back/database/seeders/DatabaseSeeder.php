@@ -14,10 +14,13 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        UserModel::create([
-            'name' => 'Wallas Maciel',
-            'username' => 'wallas',
-            'password' => Hash::make('123456'),
-        ]);
+        UserModel::firstOrCreate(
+            ['name' => 'Wallas Maciel'],
+            [
+                'name' => 'Wallas Maciel',
+                'username' => 'wallas',
+                'password' => Hash::make('123456'),
+            ]
+        );
     }
 }

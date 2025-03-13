@@ -131,7 +131,7 @@
             dialogAdd.value = false
             fetchTransactions()
         }).catch(err => {
-            alert(err.response.data.message ?? err.message ?? err)
+            alert(err.response?.data?.message ?? err.message ?? err)
         })
     })
 
@@ -145,7 +145,7 @@
                 created_at: formattedDate(value.created_at),
             }))
         } catch(err: any) {
-            alert(err.response.data.message ?? err.message ?? err)
+            alert(err.response?.data?.message ?? err.message ?? err)
         } finally {
             tableLoading.value = false
         }
@@ -157,7 +157,7 @@
             if (response.status != 200) throw new Error('Falha na consulta de categorias: ', response.data)
             listCategories.value = response.data
         } catch(err: any) {
-            alert(err.response.data.message ?? err.message ?? err)
+            alert(err.response?.data?.message ?? err.message ?? err)
         }
     }
 
@@ -174,7 +174,7 @@
         $axios.delete(`/transactions/${id}`).then(response => {
             fetchTransactions()
         }).catch(err => {
-            alert(err.response.data.message ?? err.message ?? err)
+            alert(err.response?.data?.message ?? err.message ?? err)
         })
     }
 

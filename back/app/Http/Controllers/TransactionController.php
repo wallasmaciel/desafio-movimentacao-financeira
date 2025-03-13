@@ -9,7 +9,7 @@ class TransactionController extends Controller
 {
     public function index() 
     {
-        $transactions = TransactionModel::all();
+        $transactions = TransactionModel::orderByDesc("created_at")->get();
         $transactions->load("category");
         // 
         return response()->json($transactions);

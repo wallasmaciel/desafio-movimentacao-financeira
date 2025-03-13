@@ -11,7 +11,7 @@ class CategoryController extends Controller
 {
     public function index() 
     {
-        $categories = CategoryModel::all();
+        $categories = CategoryModel::orderByDesc("created_at")->get();
         return response()->json($categories);
     }
 

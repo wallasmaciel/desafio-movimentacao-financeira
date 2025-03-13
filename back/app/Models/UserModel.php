@@ -9,6 +9,12 @@ class UserModel extends Model
 {
     protected $table = "tb_users";
     protected $keyType = "string";
+    protected $fillable = [
+        "name",
+        "username",
+        "password"
+    ];
+    public $timestamps = false;
 
     protected static function boot()
     {

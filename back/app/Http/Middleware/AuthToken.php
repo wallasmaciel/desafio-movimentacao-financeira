@@ -29,7 +29,7 @@ class AuthToken
         try {
             $token = str_replace('Bearer ', '', $token);
             $decoded = JWT::decode($token, new Key(
-                UserController::$KEY_JWT, "HS256"));
+                env("JWT_SECRET", "token_jwt"), "HS256"));
             $request->auth = $decoded;
             // 
             return $next($request);

@@ -10,7 +10,6 @@ use Exception;
 
 class UserController extends Controller
 {
-    public static $KEY_JWT = env("JWT_SECRET", "token_jwt");
     public function login(Request $request)
     {
         $validatedData = $request->validate([
@@ -37,7 +36,7 @@ class UserController extends Controller
 
         $token = JWT::encode(
             $payload, 
-            UserController::$KEY_JWT, 
+            env("JWT_SECRET", "token_jwt"), 
             "HS256", 
             $user->id, 
             $header

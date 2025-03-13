@@ -129,8 +129,8 @@ import { formattedDate } from '~/utils/dateUtil'
     const fetchCategories = async() => {
         tableLoading.value = true
         try {
-            const response = await $axios.get("/categories")
-            if (response.status != 200) throw new Error('Falha na consulta de categorias: ', response.data)
+            const response = await $axios.get<Category[]>("/categories")
+            if (response.status != 200) throw new Error('Falha na consulta de categorias: ' + response.statusText)
             data.value = response.data.map(value => ({
                 ...value,
                 created_at: formattedDate(value.created_at),

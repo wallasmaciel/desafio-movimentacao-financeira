@@ -138,8 +138,8 @@
     const fetchTransactions = async() => {
         tableLoading.value = true
         try {
-            const response = await $axios.get("/transactions")
-            if (response.status != 200) throw new Error('Falha na consulta de transacoes: ', response.data)
+            const response = await $axios.get<Transaction[]>("/transactions")
+            if (response.status != 200) throw new Error('Falha na consulta de transacoes: ' + response.statusText)
             data.value = response.data.map(value => ({
                 ...value,
                 created_at: formattedDate(value.created_at),

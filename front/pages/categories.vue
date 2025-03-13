@@ -36,16 +36,8 @@
 
                 <v-text-field v-model="category_name" type="text" label="Nome" :error-messages="errors.name"></v-text-field>
                 <v-text-field v-model="category_description" type="text" label="Descrição" :error-messages="errors.description"></v-text-field>
-                <v-row>
-                    <v-col>
-                        <v-select v-model="category_type" label="Tipo" :error-messages="errors.type"
-                            :items="itemsTypes" item-title="text"></v-select>
-                    </v-col>
-                    <v-col>
-                        <v-select v-model="category_status" label="Status" :error-messages="errors.status"
-                            :items="itemsStatus" item-value="value" item-title="text"></v-select>
-                    </v-col>
-                </v-row>
+                <v-select v-model="category_type" label="Tipo" :error-messages="errors.type"
+                    :items="itemsTypes" item-title="text"></v-select>
                 <v-btn :loading="formLoading" text="Entrar" type="submit" color="primary"
                     class="w-100"></v-btn>
             </v-form>
@@ -78,14 +70,12 @@
         name: string
         description: string
         type: string
-        status: number
     }
 
     const validationSchema: yup.ObjectSchema<CategoryForm> = yup.object({
         name: yup.string().required('O nome é obrigatório'),
         description: yup.string().required('A descrição é obrigatório'),
         type: yup.string().required('O tipo é obrigatório'),
-        status: yup.number().default(1),
     })
     const { handleSubmit, errors, resetForm } = useForm<CategoryForm>({
         validationSchema,
@@ -95,7 +85,6 @@
     const { value: category_name } = useField<string>('name')
     const { value: category_description } = useField<string>('description')
     const { value: category_type } = useField<string>('type')
-    const { value: category_status } = useField<number>('status')
 
     const search = ref('')
     const tableLoading = ref(false)
@@ -106,14 +95,9 @@
         { title: 'Nome', value: 'name' },
         { title: 'Tipo', value: 'type' },
         { title: 'Descrição', value: 'description' },
-        { title: 'Status', value: 'status' },
         { text: 'Ações', value: 'actions', sortable: false },
     ])
     const data = ref<Readonly<Category>[]>([])
-    const itemsStatus = ref([
-        { value: 1, text: 'ATIVO' },
-        { value: 0, text: 'INATIVO' },
-    ])
     const itemsTypes = ref([
         'ENTRADA',
         'SAIDA',
@@ -168,7 +152,6 @@
         category_name.value = item.name
         category_description.value = item.description
         category_type.value = item.type
-        category_status.value = 1 // HOMOLOGACAO
         // 
         dialogAdd.value = true
     }

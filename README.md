@@ -30,19 +30,25 @@ Clone o repositório para sua máquina local e acesse a pasta:
    DB_PASSWORD="movimentacaoFinanceiraDB@123"
 ```
 
-### 4. Subir os containers Docker
+### 4. Adicione o campo no arquivo **back/.env**
+
+```bash
+   JWT_SECRET=T3prvi5ZQNZiW7IZTaYSTMpAJVfUMyqdPiFq18YJSuEY71f5J529IIDnBb7guzTJ
+```
+
+### 5. Subir os containers Docker
 
 ```bash    
    docker-compose up --build -d
 ```
 
-### 5. Acesse o terminal do container
+### 6. Acesse o terminal do container
 
 ```bash    
    docker exec -it desafio-movimentacao-financeira-back bash
 ```
 
-### 6. Rodar as migrações e seeders e sair do terminal
+### 7. Rodar as migrações e seeders e sair do terminal
 ```bash
    php artisan migrate
    php artisan db:seed

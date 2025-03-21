@@ -1,0 +1,16 @@
+version: '3.8'
+services:
+  desafio-movimentacao-financeira-front:
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    container_name: desafio-movimentacao-financeira-front
+    ports:
+      - "3000:3000"
+    volumes:
+      - ../..:/workspaces:cached
+    networks:
+      - movimentacao-financeira-network
+networks:
+  movimentacao-financeira-network:
+    driver: bridge

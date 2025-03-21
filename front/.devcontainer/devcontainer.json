@@ -1,16 +1,15 @@
 // For format details, see https://aka.ms/devcontainer.json. For config options, see the
 // README at: https://github.com/devcontainers/templates/tree/main/src/php-mariadb
 {
-	"name": "Movimentação financeira PHP & MySQL",
+	"name": "Movimentação financeira Nuxt",
 	"dockerComposeFile": "./docker-compose.yaml",
-	"service": "desafio-movimentacao-financeira-back",
+	"service": "desafio-movimentacao-financeira-front",
 	"workspaceFolder": "/workspaces/${localWorkspaceFolderBasename}",
 	// Features to add to the dev container. More info: https://containers.dev/features.
 	// "features": {},
 	// For use with PHP or Apache (e.g.php -S localhost:8080 or apache2ctl start)
 	"forwardPorts": [
-		8000,
-		3306
+		3000
 	],
 	"features": {
 		"ghcr.io/devcontainers/features/common-utils:2": {},
